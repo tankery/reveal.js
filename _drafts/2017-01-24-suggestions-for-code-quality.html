@@ -1,0 +1,156 @@
+---
+layout: slide
+title: 写好代码的几点建议
+tags:
+  - Code Quality
+  - Programing
+  - Tankery Chen
+featured: true
+published: true
+preview: |
+  - 为什么要关注代码质量
+  - 代码质量的关键方向
+  - 帮助提升代码质量的方式
+  - 一些 best practices
+  - 技术资料的获取
+---
+
+<section data-markdown>
+  # 写好代码的几点建议
+  ### Tankery @ Mobvoi Inc.
+</section>
+<section data-markdown>
+  ## Agenda
+  - [为什么要关注代码质量](#/why)
+  - [代码质量的关键方向](#/key-direction)
+  - [帮助提升代码质量的方式](#/methods)
+  - [一些 best practices](#/best-practices)
+  - [技术资料的获取](#/materials)
+</section>
+
+<section data-markdown id="why">
+  ## 为什么要关注代码质量
+  - 自我成长和团队提升
+  - 便于理解（沟通、交接、回顾）（同理心）
+  - 提高稳定性、减少bug
+  - 很好玩：思维游戏
+</section>
+
+<section data-markdown id="key-direction">
+  ## 代码质量的关键方向
+</section>
+<section data-markdown>
+  <script type="text/template">
+    ![](img/suggestions-for-code-quality/measurement-of-code-quality.png)
+
+    Souce: <!-- .element: class="footnote" -->
+    https://blog.codinghorror.com/content/images/uploads/2009/02/6a0120a85dcdae970b012877707a45970c-pi.png
+  </script>
+</section>
+
+<section data-markdown id="key-direction-clean">
+  ## 关键方向-清晰
+</section>
+<section>
+  <section data-markdown>
+    <script type="text/template">
+      ## 关键方向-清晰-命名清晰
+
+      当你觉得命名很难时，已经迈出了第一步，说明开始关注命名和思考如何去命名
+
+      考虑变量命名、函数命名、类、包名、工程目录等任何位置的命名。
+
+      [一些建议](#) <!-- .element: class="navigate-down" -->
+    </script>
+  </section>
+  <section data-markdown>
+    ## 命名清晰-变量命名
+
+    - 绝大部分时候，不要硬编码
+    - 使用足够表明这个变量意义的名词
+    - 越是局部的变量长度越短，越是全局则长度越长
+    - 没必要使用无意义的前缀（见仁见智）
+      - 现代编辑器已经用颜色、加粗、斜体等等方式告诉你作用域了
+      - m 前缀是 Android framework 的规范（framework没有好的IDE），google 的 Java code style [并不提倡这样](https://google.github.io/styleguide/javaguide.html#s5.1-identifier-names)
+      - 扩展阅读：[Just Say mNo to Hungarian Notation](http://jakewharton.com/just-say-no-to-hungarian-notation/)
+  </section>
+  <section data-markdown>
+    ## 命名清晰-函数命名
+
+    - 使用动词
+    - 足够表明这个函数在做什么
+    - 去除不必要的名称（比如函数参数已经有体现，或者所在的类已经有体现）
+    - 如果复杂到不好命名，说明需要重构了
+  </section>
+</section>
+<section data-markdown>
+  ## 关键方向-清晰-逻辑分块
+
+  > 逻辑分块一方面有利于代码逻辑的清晰、整洁，另一方面也有利于代码复用。
+
+  - 空行
+  - 抽取函数、类、包
+  - 独立工程模块
+</section>
+<section data-markdown>
+  ## 关键方向-清晰-简化逻辑
+
+  > 通过抽取独立逻辑、梳理依赖关系来简化代码逻辑
+
+  - 减少多次嵌套
+  - 复杂的判断分支
+  - 错综复杂的依赖关系
+</section>
+<section data-markdown>
+  ## 关键方向-清晰-简化逻辑
+
+  > 通过抽取独立逻辑或使用抽象来简化代码逻辑
+
+  - 减少多次嵌套
+  - 复杂的判断分支
+</section>
+<section data-markdown>
+  ## 关键方向-清晰-减少依赖
+
+  - 职责分离
+  - 解耦
+  - 可重入的函数（no side-effects）
+  - 使用组合、而不是继承
+    - 继承必须遵循一个逻辑是，子类“是”一个父类，而不是单纯为了复用父类的逻辑。
+</section>
+<section>
+  <section data-markdown>
+    <script type="text/template">
+      ## 关键方向-清晰-注释
+
+      - 通过重构来减少注释
+        - 逻辑块的解释，用函数名就够了
+      - 不要解释做了什么，而是为什么做这些（写目的、意图，而不是实现方式）
+        - [栗子](#) <!-- .element: class="navigate-down" -->
+        - 解释设计思想、程序结构、提醒使用/修改者
+      - 去掉不必要的注释（代码已经足够清晰）
+    </script>
+  </section>
+  <section data-markdown>
+    ## 什么是好的注释
+
+    ``` java
+    // Good
+    // Find first element larger than given.
+
+    // Bad
+    // For element in list, return element > given.
+
+    for (int element : elements) {
+      if (element > given) return element;
+    }
+    ```
+  </section>
+</section>
+<section data-markdown>
+  ## 关键方向-清晰-去除无用代码
+
+  无用的代码对于理解程序逻辑是一个干扰
+
+  无用的代码应该直接删除，而不是注释掉。可以通过版本管理拿回老的代码，不用担心丢掉。
+</section>

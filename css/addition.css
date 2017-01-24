@@ -1,0 +1,6 @@
+/**
+ * Additional styles for Tankery's Slides.
+ */
+.reveal .slides section .footnote {
+  font-size: 0.4em;
+}

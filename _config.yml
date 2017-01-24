@@ -16,6 +16,9 @@ description: > # this means to ignore newlines until "baseurl:"
   A framework for easily creating beautiful presentations using HTML.
 baseurl: "" # the subpath of your site, e.g. /blog
 
+slides:
+  theme: black
+
 # Specific social links, now we support following social account:
 # github, twitter, weibo, google-plus, instagram, facebook, stack-overflow
 # To support more social links, edit url in _data/socials.yml
