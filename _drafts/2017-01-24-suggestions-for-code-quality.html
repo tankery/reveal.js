@@ -154,3 +154,223 @@ preview: |
 
   无用的代码应该直接删除，而不是注释掉。可以通过版本管理拿回老的代码，不用担心丢掉。
 </section>
+
+<section data-markdown id="key-direction-reuse">
+  ## 关键方向-复用
+</section>
+<section data-markdown>
+  ## 关键方向-复用-复用功能
+
+  - 抽取函数
+  - 抽取类
+</section>
+<section data-markdown>
+  <script type="text/template">
+    ## 关键方向-复用-逻辑复用（抽象）
+
+    - 思想 - 抽象
+      - 举一反三
+      - 面向接口（利于分工、构建复杂系统）
+      - 推荐阅读：[抽象的能力](http://mp.weixin.qq.com/s?__biz=MzA3NDM0ODQwMw==&mid=401779088&idx=1&sn=99554843a8324b4fbfe5684784e38cb9&mpshare=1&scene=1&srcid=1125bmJwaDo3WxUsryxpDbXM#rd)
+    - 方法
+      - 多态
+      - 泛型
+  </script>
+</section>
+<section>
+  <section data-markdown>
+    <script type="text/template">
+      ## 关键方向-复用-代码库
+
+      - 统一管理（intent 相关常量）
+      - Helpers
+      - 具体业务逻辑（UI、Media、File等等）
+      - [站在巨人的肩膀](#) <!-- .element: class="navigate-down" -->
+    </script>
+  </section>
+  <section data-markdown>
+    ## 代码库-站在巨人的肩膀
+
+    - 个人喜欢一些简单、优雅、设计良好的库
+    - [retrofit](https://square.github.io/retrofit/)/[OkHttp](https://square.github.io/okhttp/)
+      - 不太喜欢 [volley](https://github.com/google/volley)，是的，功能很多，但是臃肿，使用复杂
+      - OkHttp 源码中的责任链模式非常值得学习: http://blog.piasy.com/2016/07/11/Understand-OkHttp/
+    - [glide](https://github.com/bumptech/glide/) (其源码的设计思想很有意思，通过注册来确定某种数据类型的访问，对应哪种处理器，运动改版中的传感器数据处理借鉴了这个思想)
+  </section>
+  <section data-markdown>
+    ## 代码库-站在巨人的肩膀（续）
+
+    - [DBFlow](https://github.com/Raizlabs/DBFlow/) (不太喜欢 [GreenDao](https://github.com/greenrobot/greenDAO/)，因为它需要把generate出来的代码放入代码库，其实3.0也引入了 annotation process，但居然会把 generate 出来的东西直接修改你手写的代码，容易混乱）
+    - [RxJava](https://github.com/ReactiveX/RxJava/) (不太喜欢 [EventBus](https://github.com/greenrobot/EventBus/)，一不小心就使得代码关系错综复杂)
+    - [Mockito](http://site.mockito.org/)/[PowerMockito](http://powermock.github.io/)/[robolectric](http://robolectric.org/) 单元测试 mock 工具
+    - [butterknife](http://jakewharton.github.io/butterknife/)
+  </section>
+</section>
+
+<section data-markdown id="key-direction-robust">
+  ## 关键方向-健壮
+</section>
+<section data-markdown>
+  ## 关键方向-健壮-输入输出检查
+
+  - 函数，请求，等的输入输出
+  - 输入合法性检查
+  - 记得处理调用错误
+</section>
+<section data-markdown>
+  <script type="text/template">
+    ## 关键方向-健壮-提前暴露问题
+
+    - 为什么
+      - 更容易修复
+      - 影响更小
+    - 方法
+      - [静态代码检查](#/methods-static-analyze)
+      - [自动化测试](#/methods-unit-test)
+      - 使用模板，使类型安全
+      - 能crash的就让它crash（不要掩盖问题）
+  </script>
+</section>
+
+<section data-markdown id="key-direction-over-design">
+  ## 关键方向-避免过度设计
+
+  > Speculative Generality - no need “what if?”
+
+  用熟练的重构技法来代替超前的设计（只要根本性、方向性的设计不出问题，后续都可以随着开发的进行来快速重构）
+</section>
+
+<section>
+  <section data-markdown id="key-direction-bad-code">
+    ## 关键方向-代码坏味道
+
+    - Dead code
+    - Speculative Generality - no need “what if?”
+    - Large classes
+    - God object
+    - Multiple languages in one file
+    - Framework core modifications
+    - Overuse of static (especially when coding in Joomla!)
+  </section>
+  <section data-markdown>
+    ## 关键方向-代码坏味道（续）
+
+    - Magic numbers - replace with const or var
+    - Long if conditions - replace with function
+    - Call super’s overwritten methods
+    - Circular dependency
+    - Circular references
+    - Sequential coupling
+    - Hard-coding
+    - Too much inheritance - composition is better than inheritance
+  </section>
+</section>
+
+<section data-markdown id="methods">
+  ## 帮助提升代码质量的方式
+</section>
+<section data-markdown>
+  ## 提升质量的方式-阅读
+
+  尽量多的阅读英文文章和阅读优秀代码
+
+  - 第一手资料，高质量的技术内容都在国外，绝大部分的topic质量都比中文资料高得多
+  - 获得命名的常用方式，培养英文语感（否则很快就词穷，总不能用拼音吧）
+  - 其实读的多了，英语渣也大致能看懂的，看不懂的也有翻译软件
+</section>
+<section data-markdown>
+  ## 提升质量的方式-Code Review
+
+  - 所有与代码相关的东西，都尽量加入 version control （code, document, tools, build script, test data）
+  - 小块小块的提交（特别对于大功能的开发，最好是一个模块一个模块的提交，只要保持入口关闭就行。能尽早发现问题。）
+</section>
+<section data-markdown>
+  ## 提升质量的方式-不要造轮子
+
+  - 首先寻找Java的实现，然后寻找 Android 的原生实现，再次寻找流行的经过验证的库，最后再考虑自己造轮子。
+  - 举个栗子： Date -> String。想输出 x月。如果自己造轮子，就会去拼凑，结果没有考虑到英文的问题。而使用 Android 原生实现，则使用 DateFormat.format("MMM", date) 就够了。
+</section>
+<section data-markdown id="methods-static-analyze">
+  <script type="text/template">
+    ## 提升质量的方式-静态代码检查
+
+    - Lint error/warning
+      - 使用标准 lint 规则来检查潜在问题
+      - 自定义规则检查 code style
+    - [LeakCanary](https://github.com/square/leakcanary)
+    - Annotations (Nullable, NonNull, IntDef, CallSuper, etc)
+  </script>
+</section>
+<section data-markdown id="methods-unit-test">
+  ## 提升质量的方式-自动化测试
+
+  - 测试复杂逻辑，不用一遍遍安装应用来手动测试
+  - 防止代码修改引入的bug
+  - 帮助做出更好的代码设计
+  - 综合来看、提升自己和团队的效率
+</section>
+
+<section data-markdown id="best-practices">
+  ## 一些 best practices
+</section>
+<section data-markdown>
+  ## Android betst practices
+
+  https://github.com/futurice/android-best-practices
+</section>
+<section data-markdown>
+  ## 经验 - 关注数据流向
+
+  - 很多现代架构在做的事情，就是切断复杂的依赖，使得数据有着明确、单向的流转方向。
+  - 比如 MVC -> MVP/MVVM 通过 Presenter (ViewModel) 将 Model 和 View 分层，明确数据由M -> P -> V，而用户指令、控制则由 V -> P -> M 。View 的变化完全依赖 P 的数据变化、然后发出指令。
+  - 再比如 Flux (Facebook 出品)。明确数据只能通过 Action 由 Dispatcher 再传输到 Store，在 View 依赖 Store 数据变化的基础上，统一了各个引起数据变化的操作，统一在 Dispatcher 管理。
+</section>
+
+<section data-markdown id="materials">
+  ## 技术资料的获取
+</section>
+<section data-markdown>
+  ## 资料获取-搜索、网站：
+
+  - Google, Google, Google，用英文搜索
+  - StackOverflow: 其实一般都是 Google 的第一个结果，如果一个问题在 StackOverflow 上搜到了，这个问题基本也就终结了。
+  - 知乎： 一些思想性的东西，可以在知乎上有比较深度的讨论
+</section>
+<section data-markdown>
+  ## 资料获取-公众号：
+
+  - 程序人生（programmer_life）： 经常会写很多高质量的技术文章。虽然他本人应该是搞后端的，但很多文章写得都是通用思想，很多后端技术对前端代码也有非常好的借鉴作用
+  - MacTalk（sagacity-mac）： 相对比较生活化，对一些工具、软技能等都有介绍
+  - 滴答滴答（AngelaTalk）： 硅谷程序媛妹子，现在就职 Airbnb，搞支付，也是后端的牛人。
+</section>
+<section data-markdown>
+  ## 资料获取-技术文章：
+
+  - Medium：不光是技术，各方面的优质文字，国内很多文字都是从这上面翻译过去的。
+  - 简书： Medium 中国版
+  - 掘金： 比较高质量的技术文字。
+</section>
+
+<section data-markdown class="small">
+  <script type="text/template">
+    ## References
+
+    - 《重构：改善既有代码的设计》<br>
+      https://book.douban.com/subject/4262627/
+
+    - 《修改代码的艺术》<br>
+      https://book.douban.com/subject/2248759/
+
+    - Clean, high quality code: a guide on how to become a better programmer<br>
+      https://www.butterfly.com.au/blog/website-development/clean-high-quality-code-a-guide-on-how-to-become-a-better-programmer
+
+    - Best practices in Android development<br>
+      https://github.com/futurice/android-best-practices
+
+    - Just Say mNo to Hungarian Notation<br>
+      http://jakewharton.com/just-say-no-to-hungarian-notation/
+
+    - 抽象的能力<br>
+      http://mp.weixin.qq.com/s?__biz=MzA3NDM0ODQwMw==&mid=401779088&idx=1&sn=99554843a8324b4fbfe5684784e38cb9&mpshare=1&scene=1&srcid=1125bmJwaDo3WxUsryxpDbXM#rd
+  </script>
+</section>

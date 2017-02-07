@@ -4,3 +4,11 @@
 .reveal .slides section .footnote {
   font-size: 0.4em;
 }
+.reveal .slides section .small {
+ font-size: 0.6em;
+}
+.reveal .slides section.small p {
+ font-size: 0.6em;
+ margin: 10px 0;
+ line-height: 1;
+}
