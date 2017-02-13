@@ -1,0 +1,256 @@
+---
+layout: slide
+title: 基于 MediaBrowser 搭建音乐应用
+tags:
+  - MediaSession
+  - MediaBrowser
+  - 音乐
+  - Ticwear
+featured: true
+published: false
+preview: |
+  - MediaSession 介绍
+  - MediaBrowser 介绍
+  - TicMusic 实现方案
+  - 参考资料
+---
+
+<section data-markdown>
+  ## 基于 MediaBrowser 搭建音乐应用
+  ### Tankery @ Mobvoi Inc.
+</section>
+<section data-markdown>
+  ## Agenda
+
+  - [MediaSession 介绍](#/media-session-intro)
+  - [MediaBrowser 介绍](#/media-browser-intro)
+  - [TicMusic 实现方案](#/ticmusic-impl)
+  - [参考资料](#/references)
+</section>
+
+<section data-markdown id="media-session-intro">
+  ## MediaSession 介绍
+
+  - 为什么用 MediaSession
+  - 如何使用
+</section>
+
+<section>
+  <section data-markdown>
+    <script type="text/template">
+      ## 为什么用 MediaSession
+
+      - RemoteController 已经被 deprecated，Android 推荐使用 MediaSession
+      - 提供更丰富的[系统级接口](#) <!-- .element: class="navigate-down" -->，统一媒体播放交互
+      - 使用 MediaSessionCompat，支持 API4+
+        - support lib 24.0.0 以后的版本才支持 playing queue, event 等接口，我们工程内部使用的 24.2.1
+    </script>
+  </section>
+  <section data-markdown>
+    ## MediaSession 接口
+
+    - 播放控制（蓝牙耳机、控制中心）
+    - 媒体信息发布（metadata）
+    - 播放状态发布（playback state）
+    - 通知栏统一样式（NotificationCompat.MediaStyle）
+    - 其他媒体相关的接口
+      - playing queue
+      - event, extras, etc.
+  </section>
+</section>
+
+<section>
+  <section data-markdown>
+    ## 如何使用 MediaSession
+
+    - MediaSession 后台媒体会话服务（发布媒体信息、接收控制）
+    - MediaSession.Token 识别对应的后台会话（一个应用内部也可以有多个会话，非常灵活）
+    - MediaSession.Callback 接收控制指令
+  </section>
+  <section data-markdown>
+    ## 如何使用 MediaSession (续)
+
+    - MediaControl 用户端控制和媒体信息接收
+    - MediaControl.TransportControls 发送控制指令
+      - prepare, play, pause, skip, stop, seek, custom, etc.
+    - MediaControl.Callback 接收媒体信息和播放状态
+      - metadata, playback state, queue change, etc.
+  </section>
+  <section data-markdown>
+    ## 如何使用 MediaSession (续)
+
+    - MediaSessionManager 全局管理
+    - 有通知权限的应用可以获取到系统所有的 MediaSession 对应的 MediaControl，从而对各个媒体进行控制和交互。
+  </section>
+</section>
+
+<section data-markdown id="media-browser-intro">
+  ## MediaBrowser 介绍
+
+  - 什么是 MediaBrowser
+  - 为什么用它
+  - 怎么用
+</section>
+<section data-markdown>
+  ## 什么是 MediaBrowser
+
+  - 媒体资源的浏览器
+  - 通过 MediaBrowserService 提供统一的媒体资源浏览服务，甚至不需要任何额外代码，就可以在 Auto, Wear 上浏览自己的媒体资源，控制媒体播放。
+  - 只要有权限，通过 MediaBrowser 可以连接任何提供了 MediaBrowser 浏览方式的播放器。
+</section>
+<section data-markdown>
+  ## 为什么用 MediaBrowser
+
+  - 不需要自己去实现一套媒体信息的发布接口，MediaBrowser 满足了各类常规的媒体信息浏览需求，并具有较强的扩展性。
+  - MediaBrowserServiceCompat 支持到 API4+
+</section>
+<section>
+  <section data-markdown>
+    ## 怎么使用 `MediaBrowser`
+
+    - 以类似文件目录形式组织媒体资源
+    - 每个媒体资源，以 [`MediaItem`](#/use-media-item) 的形式返回（包括目录和具体资源）
+    - 后台服务继承 [`MediaBrowserService`](#/use-media-browser-service)，提供媒体资源
+    - 前台UI通过 [`MediaBrowser`](#/use-media-browser) 浏览资源
+  </section>
+  <section data-markdown id="use-media-item">
+    ## 怎么使用 `MediaItem`
+
+    - `mediaId` 资源识别id，需要能够根据 `mediaId` 找到对应的资源项
+    - `isBrowserable/isPlayable` 标识该项是可浏览的“文件夹”，还是可播放的叶子节点
+    - `MediaDescription` 对该资源项的描述，这些描述需要直接用于展示。
+  </section>
+  <section data-markdown id="use-media-browser-service">
+    ## 怎么使用 `MediaBrowserService`
+
+    - `setSessionToken` 创建一个 MediaSession，与 Service 绑定
+    - `onGetRoot` 返回媒体资源的根目录
+    - `onLoadChildren` 根据 parentId (mediaId) 获取目录对应的子项
+  </section>
+  <section data-markdown id="use-media-browser">
+    <script type="text/template">
+      ## 怎么使用 `MediaBrowser`
+
+      - 通过 `ComponentName` 来指定 `MediaBrowser` 对接的 service
+      - 初始化时设置回调，获取连接状态。通过 `connect/disconnect` 来连接服务
+      - 连接成功后，可以获取到媒体资源，并通过其[接口](#)<!-- .element: class="navigate-down" -->控制播放
+    </script>
+  </section>
+  <section data-markdown>
+    ## 使用 `MediaBrowser` 接口
+
+    - `getRoot`, 获取媒体库的根目录 id，从这里开始可以逐层浏览子目录内容，播放叶子节点的媒体
+    - `subscribe/unsubscribe`, 订阅指定 `mediaId` 的内容变化
+    - `getSessionToken`, 通过它可以使用 `MediaController` 连接 `MediaBrowserService` 对应的 `MediaSession`，进行控制和交互
+  </section>
+</section>
+
+<section data-markdown id="ticmusic-impl">
+  ## TicMusic 实现方案
+
+  - 总体架构
+  - 后台音乐服务架构
+  - MusicProviders
+  - UI Pages
+</section>
+<section data-markdown>
+  ## TicMusic 总体架构
+
+  - 基于 `MediaBrowser` 来组织音乐列表
+  - 通过 `MediaSession/MediaController` 来控制音乐和获取音乐信息
+  - 使用 `MusicQueue` 和 `MusicItem` 分离列表操作和单个音乐操作
+  - 通过 MediaItemProvider 树来组织媒体资源
+  - UI层采用简化的 MVVM 架构
+  - 维护了一个`PaceStack`，使用`Fragment`来实现页面跳转
+</section>
+<section data-markdown>
+  <script type="text/template">
+    ## TicMusic 后台音乐服务架构
+
+    ![](/img/media-browser-intro/music-player-background.svg)<!-- .element: class="bright" -->
+
+    <aside class="notes">
+      手表比较简单，只有一个本地音乐列表，所以一个root就对应了所有音乐。使用MusicProvider来为Service提供音乐。<br>
+      车载复杂许多，已经有层级概念，使用了更复杂的 MediaItemProviders 树来提供音乐列表和音乐。<br>
+      控制卡片可以通过对应的 MediaSessionManager 来获取播放信息<br>
+      分离列表操作和媒体操作，影响列表的操作（切歌、播放特定歌曲等）将传给 MusicQueue 处理，完成后转换成媒体操作（暂停、播放等），传给 MusicItem 处理。并通过 MusicController 来管理音乐相关任务。
+    </aside>
+  </script>
+</section>
+<section data-markdown>
+  <script type="text/template">
+    ## TicMusic 媒体资源树
+
+    ![](/img/media-browser-intro/music-providers-tree.svg)<!-- .element: class="bright" -->
+  </script>
+</section>
+<section data-markdown>
+  <script type="text/template">
+    ## TicMusic MusicProviders
+
+    ![](/img/media-browser-intro/music-providers-class.svg)<!-- .element: class="bright" -->
+  </script>
+</section>
+<section data-markdown>
+  <script type="text/template">
+    ## TicMusic UI 架构
+
+    - UI层采用简化的MVVM架构
+    - 核心思想是View只负责监听数据变化，并发送指令。其变化完全依赖数据变化，而不是用户操作。
+    - VM层通过MediaBrowser监听和控制媒体数据
+    - PlayingActivity 不绑定具体的 parentId，而是通过 playing queue 来获取当前播放列表
+  </script>
+</section>
+<section data-markdown>
+  <script type="text/template">
+    ## TicMusic Fragments
+
+    ![](/img/media-browser-intro/music-ui-class.svg)<!-- .element: class="bright" -->
+  </script>
+</section>
+<section data-markdown>
+  <script type="text/template">
+    ## TicMusic PageStack
+
+``` java
+/**
+ * Page stack stores any page navigation information.
+ *
+ * When we navigate to new page, we first pop back to the common parent of current
+ * page and new page, then push pages until the target one.
+ */
+public class PageStack extends Stack<PageLevel> {
+
+    public PageLevel commonAncestor(PageLevel target) {}
+    public PageLevel nextLevel(PageLevel target) {}
+
+    /**
+     * At a page level, we associate page to a pageId (parentId), and subscribe the page
+     * navigation request if need.
+     */
+    public static class PageLevel {
+        public String pageId;
+        public Fragment fragment;
+    }
+}
+```
+
+    像文件系统一样，页面的跳转也是先退回到父页面，再进入其他子页面
+
+  </script>
+</section>
+
+<section data-markdown class="small" id="references">
+  <script type="text/template">
+    ## References
+
+    - Media Playback with MediaSessionCompat<br>
+      https://youtu.be/FBC1FgWe5X4
+
+    - MediaBrowserServiceCompat and the modern media playback app:<br>
+      https://medium.com/google-developers/mediabrowserservicecompat-and-the-modern-media-playback-app-7959a5196d90
+
+    - AUMP sample App:<br>
+      https://github.com/googlesamples/android-UniversalMusicPlayer
+  </script>
+</section>
