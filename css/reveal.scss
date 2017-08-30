@@ -1,3 +1,5 @@
+---
+---
 /*!
  * reveal.js
  * http://lab.hakim.se/reveal-js
@@ -391,9 +393,17 @@ body {
 
 	overflow: visible;
 	z-index: 1;
-	text-align: center;
 	perspective: 600px;
 	perspective-origin: 50% 40%;
+}
+
+.reveal .slides .center {
+  text-align: center;
+}
+
+.reveal .slides img {
+  display: block;
+  margin: 0 auto;
 }
 
 .reveal .slides>section {
