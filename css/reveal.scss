@@ -8,6 +8,14 @@
  * Copyright (C) 2016 Hakim El Hattab, http://hakim.se
  */
 
+// Import grid system from https://github.com/Dogfalo/materialize
+@import "grid";
+// Override some grid property for post only
+@import "post_grid_override";
+
+.reveal {
+  @include post-grid-override;
+}
 
 /*********************************************
  * RESET STYLES

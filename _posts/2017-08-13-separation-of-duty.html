@@ -1,0 +1,328 @@
+---
+layout: slide
+title: 上帝的归上帝，凯撒的归凯撒
+tags:
+  - Code Quality
+  - Separation of Duty
+  - Tankery Chen
+featured: true
+published: true
+preview: |
+  - 什么是职责分离
+  - 为什么要分离
+  - 怎么做？
+  - 技术资料的获取
+slides:
+  theme: material
+---
+
+<section data-markdown class="center">
+  <script type="text/template">
+    # 上帝的归上帝，凯撒的归凯撒
+    ### 谈谈职责分离
+    ### Tankery @ Mobvoi Inc.
+
+    <aside class="notes" data-markdown>
+      作者：王啊喂
+      链接：https://www.zhihu.com/question/19820322/answer/29148995
+      来源：知乎
+      著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+
+      出自《圣经》 马太福音, 马可福音也有相同的描述。
+
+      当时的犹太人归罗马人管辖。但犹太人在圣殿内，仍用他们固有的货币。而在圣殿以外，民间流行的货币，都是罗马钱币。
+
+      于是，当时十分讨厌耶稣的法利赛人就伙同黑落德党人，用这个问题诘问耶稣：「给凯撒纳税，可不可以？我们该不该纳税？」
+
+      这是一个陷阱：如果耶稣答说可以，犹太百姓必认为耶稣是个卖国贼，对他产生反感，他们便可乘机向他进攻；如果耶稣答说不可以，在场的黑落德党人，即刻可下手逮捕他，因为他出言违反政府，主张人不应给政府纳税。
+
+      耶稣看破他们的恶意，就说：「假善人，你们为什么要试探我？拿一个税币给我看看！」他们便递给他一块「德纳」。
+
+      耶稣就问了，「这肖像和名号是谁的？」他们回答说：「凯撒的」。于是耶稣就对他们说：「那么，凯撒的，就应归还凯撒；天主的，就应归还天主。」
+
+      这话是什么意思呢？原来，耶稣乘这机会说明了人对天主，及对政府的义务。人属于政权，有他当尽的义务；人更属于天主，也有他该尽的义务。政权追求肉身的幸福；神权追求灵魂的幸福。
+
+      耶稣用这句话，说明了神权与政权之间的正确关系，奠定了神权与政权的基础，也划清了二者的界限。
+    </aside>
+  </script>
+</section>
+<section data-markdown>
+  # Agenda
+  - [什么是职责分离](#/what)
+  - [为什么要分离](#/why)
+  - [怎么做？](#/methods)
+  - [技术资料的获取](#/materials)
+</section>
+
+<section data-markdown id="what">
+  # 一、什么是职责分离
+  - 鼻子呼吸、嘴巴吃饭
+  - 让鼻子吃饭就会抛异常
+</section>
+
+<section data-markdown id="why">
+  # 二、为什么要分离
+  - 逻辑清晰：分模块、分层
+  - 可复用
+  - 健壮：单元测试、错误定位
+  - 集中性能优化
+</section>
+<section>
+  <section data-markdown>
+    <script type="text/template">
+      ## 逻辑清晰：分模块、分层
+      - 职责分离可以使得极为复杂的系统也能让人理解（降低每个模块的复杂度）
+      - [以生物体为例](#) <!-- .element: class="navigate-down" -->
+        - [程序人生 - 《谈谈边界（Boundary）》](http://t.cn/RNL0e1M)
+      <aside class="notes" data-markdown>
+        有的人可以记住整个应用的错综复杂的关系，可以随意用 goto 来跳转。
+        我不行，我是个记性不好的人，记不住错综复杂的关系，只能通过这样的职责分离来降低复杂度
+      </aside>
+    </script>
+  </section>
+  <section data-markdown class="center">
+    ![](/img/separation-of-duty/Boundary-cell.jpg)
+    细胞（函数，基本单元）
+  </section>
+  <section data-markdown class="center">
+    ![](/img/separation-of-duty/Boundary-tissue.jpg)
+    组织（类，完成功能）
+  </section>
+  <section data-markdown class="center">
+    ![](/img/separation-of-duty/Boundary-organ.jpg)
+    器官（组件，提供某种服务）
+  </section>
+  <section data-markdown class="center">
+    ![](/img/separation-of-duty/Boundary-system.jpg)
+    系统（应用、子系统，实现某个目的）
+  </section>
+  <section data-markdown class="center">
+    ![](/img/separation-of-duty/doge.jpg)
+    生物体（解决方案，业务）
+  </section>
+</section>
+<section data-markdown>
+  <script type="text/template">
+    ## 可复用
+
+    <div class="row">
+    <div class="col-half">
+    <pre><code class="lang-java">void makeLatte() {
+  fetch latte;
+  pour latte into cup;
+  pour water into cup;
+  mixing;
+}
+void makeCappuccino() {
+  fetch cappuccino;
+  pour cappuccino into cup;
+  pour water into cup;
+  mixing;
+}
+void makeEspresso() {
+  fetch espresso;
+  pour espresso into cup;
+  pour water into cup;
+  mixing;
+}
+    </code></pre>
+    </div>
+    <div class="col-half">
+    <pre><code class="lang-java">void make(coffee) {
+  pour coffee into cup;
+  pour water into cup;
+  mixing;
+}
+void makeLatte() {
+  fetch latte;
+  make(latte);
+}
+void makeCappuccino() {
+  fetch cappuccino;
+  make(cappuccino);
+}
+void makeEspresso() {
+  fetch espresso;
+  make(espresso);
+}
+    </code></pre>
+    </div>
+    </div>
+
+    <aside class="notes" data-markdown>
+      - 复用、而不是拷贝。确保只有一份实现
+      - 一次修改，全部更新
+      - 所有人都可以优化同一份逻辑
+    </aside>
+  </script>
+</section>
+<section data-markdown>
+  <script type="text/template">
+    ## 健壮：单元测试、错误定位
+    - 逻辑纯粹，依赖少
+      - 可以不依赖其他模块独立测试
+    - 边界
+      - 只要对边界的输入做校验，就能确保子模块运行正常
+      - 监控（log）边界的输入、输出，就可以知道子模块的运行情况
+  </script>
+</section>
+<section data-markdown>
+  ## 集中进行性能优化
+  - 独立模块的性能检测和逻辑优化
+  - 批量、并发
+</section>
+
+<section data-markdown id="methods">
+  # 三、怎么做？
+  - 核心逻辑和思想
+  - 发现问题和重构
+  - 技巧
+</section>
+<section data-markdown>
+  <script type="text/template">
+    ## 核心逻辑和思想
+
+    - **高内聚、低耦合**
+    - 数据分离
+    - 逻辑分离
+    - 数据和逻辑相互分离
+
+    <aside class="notes" data-markdown>
+      - 上帝的归上帝，凯撒的归凯撒（相关逻辑尽量集中到一个模块，不要分散。不相干逻辑分离到不同模块）
+      - 数据分离（1. 拆分复杂数据，2. 数据转换、参数传递）
+      - 逻辑分离（模块和模块之间的接口尽量少，尽量简洁；模块外界不需要了解模块内部逻辑（黑盒））
+      - 数据和逻辑相互分离：通过抽象来分离逻辑和数据
+    </aside>
+  </script>
+</section>
+<section>
+  <section data-markdown>
+    <script type="text/template">
+      ## 发现问题和重构
+
+      - 通过 "Bad smell of code"
+      - “If it stinks, change it.” - 出自Beck奶奶，讨论抚养小孩的哲学
+      - [例子](#) <!-- .element: class="navigate-down" -->
+    </script>
+  </section>
+  <section data-markdown>
+    ### Bloaters (腌鲱鱼)
+
+    - Large classes/ Long methods （违反单一职责、逻辑过于复杂）
+    - God object （违反单一职责，耦合度大）
+    - Overuse of static （耦合大，难以测试）
+  </section>
+  <section data-markdown>
+    ### Object-Orientation Abusers
+
+    - Refused Bequest (拒绝继承): 子类只使用一部分父类功能
+    - Temporary Field (临时字段): 成员变量只在某个逻辑中有意义（常见于有多个数据需要传递的情况）
+    - Alternative Classes with Different Interfaces (异曲同工的类): 不同的类做类似事情、只是接口不一样
+  </section>
+  <section data-markdown>
+    ### Change Preventers
+
+    - Divergent Change (发散式变化): 想修改一个部分的逻辑，却发现许多逻辑需要修改（耦合高）
+    - Shotgun Surgery (霰弹式修改): 想做改动时，需要同时修改多个地方（重复）
+  </section>
+</section>
+<section data-markdown>
+  ## 技巧
+
+  - 代码技巧
+  - 工作方式技巧
+</section>
+<section data-markdown>
+  ## 代码技巧
+
+  - 空行、抽取函数、抽取类、抽取包
+  - 简化逻辑（减少多次嵌套、复杂的判断分支）
+  - 使用组合、而不是继承
+</section>
+<section data-markdown>
+  ## 工作方式技巧
+
+  - 画架构图
+  - 写单元测试
+    - 一方面增强稳定性，另一方面逼迫自己做逻辑分离
+    - TDD 测试驱动开发
+</section>
+
+<section>
+  <section data-markdown>
+    <script type="text/template" class="center">
+      ## 例子：健康 App 重构
+
+      ![老版本健康架构](/img/separation-of-duty/old-health-structure.png)
+
+      - 耦合高、多处重复
+
+      <aside class="notes" data-markdown>
+        - God object: DataUtils
+        - Large classes: DataUtils, HealthDataPresenter, HealthProvider
+        - Overuse of static: HealthProvider
+        - 发散式变化: DataUtils, HealthDataPresenter
+        - 霰弹式修改: HealthDataPresenter, HealthProvider
+      </aside>
+    </script>
+  </section>
+  <section data-markdown>
+    ### 新版健康 App 架构
+
+    ![新版本健康架构](/img/separation-of-duty/health-structure.png)
+
+    - 单向数据流
+    - 职责分离、方便单元测试
+  </section>
+</section>
+
+<section data-markdown id="materials">
+  # 四、技术资料的获取
+
+  - 搜索、网站
+  - 技术人
+  - 技术文章
+</section>
+<section data-markdown>
+  ## 搜索、网站
+
+  - Google, Google, Google，用英文搜索
+  - StackOverflow: 其实一般都是 Google 的第一个结果，如果一个问题在 StackOverflow 上搜到了，这个问题基本也就终结了。
+  - 知乎： 一些思想性的东西，可以在知乎上有比较深度的讨论
+</section>
+<section data-markdown>
+  ## 技术人
+
+  - 程序人生（programmer_life）： 经常会写很多高质量的技术文章。虽然他本人应该是搞后端的，但很多文章写得都是通用思想，很多后端技术对前端代码也有非常好的借鉴作用
+  - MacTalk（sagacity-mac）： 相对比较生活化，对一些工具、软技能等都有介绍
+  - 滴答滴答（AngelaTalk）： 硅谷程序媛妹子，现在就职 Airbnb，搞支付，也是后端的牛人。
+  - JakeWharton：开源大神，之前在 SquareUp 参与 RxJava, Kotlin, ButterKnife  等开源项目的研发。关注他的博客、GitHub 和各类演讲，都收获颇多。
+</section>
+<section data-markdown>
+  ## 技术文章：
+
+  - Medium：不光是技术，各方面的优质文字，国内很多文字都是从这上面翻译过去的。
+  - 简书： Medium 中国版
+  - 掘金： 比较高质量的技术文字。
+</section>
+
+<section data-markdown class="small">
+  <script type="text/template">
+    # References
+
+    - 《重构：改善既有代码的设计》<br>
+      https://book.douban.com/subject/4262627/
+
+    - 《修改代码的艺术》<br>
+      https://book.douban.com/subject/2248759/
+
+    - Code Smells<br>
+      https://sourcemaking.com/refactoring/smells
+
+    - 抽象的能力<br>
+      http://t.cn/RNL3onp
+
+    - 谈谈边界<br>
+      http://t.cn/RNL0e1M
+  </script>
+</section>
